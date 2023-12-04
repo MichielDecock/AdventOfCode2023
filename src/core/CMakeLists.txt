@@ -8,3 +8,5 @@ add_library(core
 target_include_directories(core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+target_compile_definitions(core PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
