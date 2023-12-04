@@ -1,0 +1,7 @@
+set(CORE_HEADERS
+    include/core_trebuchet_calibration.h
+)
+
+set(CORE_SOURCES
+    core_trebuchet_calibration.cpp
+)

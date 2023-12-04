@@ -1,0 +1,3 @@
+set(TESTS_SOURCES
+    tests_trebuchet_calibration.cpp
+)
