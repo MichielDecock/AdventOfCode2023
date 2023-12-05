@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "core_trebuchet_calibration.h"
+#include "core_utils.h"
 
 int main(int argc, char** argv)
 {

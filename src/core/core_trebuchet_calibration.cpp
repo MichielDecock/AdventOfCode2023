@@ -1,9 +1,8 @@
 #include <algorithm>
-#include <fstream>
 #include <numeric>
-#include <sstream>
 
 #include "include/core_trebuchet_calibration.h"
+#include "include/core_utils.h"
 
 namespace
 {
@@ -79,36 +78,9 @@ namespace core
 
 using numberMapType = std::map<std::string, size_t>;
 
-std::vector<std::string> readFile(const char* fileName, char delimiter)
-{
-    std::vector<std::string> lines;
-
-    std::fstream fstream;
-    fstream.open(std::string(CMAKE_SOURCE_DIR) + "/" + fileName);
-
-    std::string line;
-    while (std::getline(fstream, line))
-    {
-        if (line.empty())
-            continue;
-
-        std::stringstream sstream(line);
-        std::string       partOfLine;
-        while (std::getline(sstream, partOfLine, delimiter))
-        {
-            if (partOfLine.empty())
-                continue;
-
-            lines.push_back(partOfLine);
-        }
-    }
-
-    return lines;
-}
-
 std::map<std::string, size_t> textNumberMap()
 {
-    const auto lines = core::readFile("res/digits", ';');
+    const auto lines = core::readFile("res/digits", {';'});
 
     if (lines.size() % 2 != 0)
         return {};

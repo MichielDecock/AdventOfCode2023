@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "core_trebuchet_calibration.h"
+#include "core_utils.h"
 
 namespace gtest
 {

@@ -1,3 +1,4 @@
 set(TESTS_SOURCES
+    tests_cubes_game.cpp
     tests_trebuchet_calibration.cpp
 )
