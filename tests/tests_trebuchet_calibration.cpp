@@ -1,3 +1,4 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "core_trebuchet_calibration.h"
@@ -5,37 +6,89 @@
 namespace gtest
 {
 
-TEST(TrebuchetCalibration, readInput)
+namespace
 {
-    const auto lines = core::readInput("tests/res/tests_calibration_input");
 
-    ASSERT_EQ(5u, lines.size());
-    EXPECT_STREQ("1abc2", lines[0].c_str());
-    EXPECT_STREQ("pqr3stu8vwx", lines[1].c_str());
-    EXPECT_STREQ("a1b2c3d4e5f", lines[2].c_str());
-    EXPECT_STREQ("treb7uchet", lines[3].c_str());
+MATCHER_P(matchMap, expectedMap, "Maps are not equal")
+{
+    if (expectedMap.size() != arg.size())
+        return false;
+
+    return std::all_of(expectedMap.cbegin(),
+                       expectedMap.cend(),
+                       [&arg](const auto& item)
+                       {
+                           const auto found = arg.find(item.first);
+                           if (found == arg.cend())
+                               return false;
+
+                           return item.second == found->second;
+                       });
+}
+
+} // namespace
+
+TEST(TrebuchetCalibration, readFile)
+{
+    using namespace ::testing;
+    const auto lines = core::readFile("tests/res/tests_calibration_input");
+
+    ASSERT_EQ(9u, lines.size());
+    EXPECT_THAT(lines,
+                ElementsAre(StrEq("two1nine"),
+                            StrEq("eightwothree"),
+                            StrEq("abcone2threexyz"),
+                            StrEq("xtwone3four"),
+                            StrEq("4nineeightseven2"),
+                            StrEq("zoneight234"),
+                            StrEq("7pqrstsixteen"),
+                            StrEq("fiveight"),
+                            StrEq("nonumbers")));
 }
 
 TEST(TrebuchetCalibration, extractNumber)
 {
-    const auto lines = core::readInput("tests/res/tests_calibration_input");
+    using namespace ::testing;
+
+    const auto lines = core::readFile("tests/res/tests_calibration_input");
 
     const auto numbers = core::extractNumbers(lines);
 
-    ASSERT_EQ(4u, numbers.size());
-    EXPECT_EQ(12, numbers[0]);
-    EXPECT_EQ(38, numbers[1]);
-    EXPECT_EQ(15, numbers[2]);
-    EXPECT_EQ(77, numbers[3]);
+    ASSERT_EQ(8u, numbers.size());
+    EXPECT_THAT(numbers, ElementsAre(29, 83, 13, 24, 42, 14, 76, 58));
 }
 
 TEST(TrebuchetCalibration, sum)
 {
-    const auto lines = core::readInput("tests/res/tests_calibration_input");
+    const auto lines = core::readFile("tests/res/tests_calibration_input");
 
     const auto numbers = core::extractNumbers(lines);
 
-    EXPECT_EQ(142, core::sum(numbers));
+    EXPECT_EQ(339, core::sum(numbers));
+}
+
+TEST(TrebuchetCalibration, textNumberMap)
+{
+    using namespace ::testing;
+
+    using mapType = std::map<std::string, size_t>;
+
+    const mapType map = core::textNumberMap();
+
+    const mapType expectedMap = {
+        { "zero", 0},
+        {  "one", 1},
+        {  "two", 2},
+        {"three", 3},
+        { "four", 4},
+        { "five", 5},
+        {  "six", 6},
+        {"seven", 7},
+        {"eight", 8},
+        { "nine", 9}
+    };
+
+    EXPECT_THAT(expectedMap, matchMap(map));
 }
 
 } //namespace gtest

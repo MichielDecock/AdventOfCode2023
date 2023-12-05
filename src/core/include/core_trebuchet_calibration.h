@@ -1,11 +1,14 @@
 #pragma once
+#include <map>
 #include <string>
 #include <vector>
 
 namespace core
 {
 
-std::vector<std::string> readInput(const char* fileName);
+std::vector<std::string> readFile(const char* fileName, char delimiter = {});
+
+std::map<std::string, size_t> textNumberMap();
 
 std::vector<size_t> extractNumbers(const std::vector<std::string>& strings);
 
