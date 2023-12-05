@@ -1,14 +1,22 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "core_cubes_game.h"
 #include "core_utils.h"
 
-#include <iostream>
-
-TEST(CubesGame, readFile)
+TEST(CubesGame, validGameIDs)
 {
-    const auto lines = core::readFile("tests/res/tests_cubes_game", {':', ';', ','});
+    using namespace ::testing;
 
-    for (const auto& line : lines)
-        std::cout << line << std::endl;
+    const auto ids = core::validGameIDs("tests/res/tests_cubes_game", 12, 13, 14);
+
+    EXPECT_EQ(3u, ids.size());
+    EXPECT_THAT(ids, ElementsAre(1u, 2u, 5u));
+}
+
+TEST(CubesGame, sum)
+{
+    const auto ids = core::validGameIDs("tests/res/tests_cubes_game", 12, 13, 14);
+
+    EXPECT_EQ(8u, core::sum(ids));
 }

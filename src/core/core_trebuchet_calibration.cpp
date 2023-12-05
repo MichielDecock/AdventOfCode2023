@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <numeric>
 
 #include "include/core_trebuchet_calibration.h"
 #include "include/core_utils.h"
@@ -115,11 +114,6 @@ std::vector<size_t> extractNumbers(const std::vector<std::string>& strings)
     }
 
     return numbers;
-}
-
-std::size_t sum(const std::vector<size_t>& numbers)
-{
-    return std::accumulate(numbers.cbegin(), numbers.cend(), 0ul);
 }
 
 } // namespace core

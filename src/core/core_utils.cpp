@@ -1,4 +1,5 @@
 #include <fstream>
+#include <numeric>
 #include <sstream>
 
 #include "include/core_utils.h"
@@ -62,6 +63,11 @@ std::vector<std::string> readFile(const char* fileName, const std::vector<char>&
     }
 
     return lines;
+}
+
+std::size_t sum(const std::vector<size_t>& numbers)
+{
+    return std::accumulate(numbers.cbegin(), numbers.cend(), 0ul);
 }
 
 } // namespace core

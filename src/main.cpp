@@ -1,14 +1,15 @@
 #include <iostream>
 
-#include "core_trebuchet_calibration.h"
+#include "core_cubes_game.h"
 #include "core_utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto   lines = core::readFile("res/calibration_input");
-    const size_t sum = core::sum(core::extractNumbers(lines));
+    const auto ids = core::validGameIDs("res/cubes_game_input", 12, 13, 14);
 
-    std::cout << "The calibration sum is " << sum << std::endl;
+    const size_t sum = core::sum(ids);
+
+    std::cout << "The cubes game ID sum is " << sum << std::endl;
 
     return 0;
 }
