@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-    const auto ids = core::validGameIDs("res/cubes_game_input", 12, 13, 14);
+    const auto ids = core::powerGameIDs("res/cubes_game_input");
 
     const size_t sum = core::sum(ids);
 
