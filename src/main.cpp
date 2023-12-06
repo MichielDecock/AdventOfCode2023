@@ -7,11 +7,11 @@ int main(int argc, char** argv)
 {
     const auto lines = core::readFile("res/gondola_gear");
 
-    const auto numbers = core::findGearNumbers(lines);
+    const auto ratios = core::extractGearRatios(lines);
 
-    const size_t sum = core::sum(numbers);
+    const size_t sum = core::sum(ratios);
 
-    std::cout << "The gondola gear sum is " << sum << std::endl;
+    std::cout << "The gondola gear ratio sum is " << sum << std::endl;
 
     return 0;
 }

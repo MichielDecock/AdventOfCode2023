@@ -56,6 +56,88 @@ bool findSymbol(const std::vector<std::string>& lines,
     return {};
 }
 
+bool isGearSymbol(const char& c)
+{
+    return c == '*';
+}
+
+size_t findNumber(const std::string& line, size_t pos)
+{
+    std::string numberString;
+    numberString += line[pos];
+
+    if (pos > 0)
+    {
+        for (size_t i = pos - 1; i != -1; --i)
+        {
+            if (!isdigit(line[i]))
+                break;
+
+            numberString = line[i] + numberString;
+        }
+    }
+
+    if (pos < line.size() - 1)
+    {
+        for (size_t i = pos + 1; i != line.size(); ++i)
+        {
+            if (!isdigit(line[i]))
+                break;
+
+            numberString += line[i];
+        }
+    }
+
+    return std::stoi(numberString);
+}
+
+std::optional<size_t>
+findRatio(const std::vector<std::string>& lines, size_t pos, size_t currentLineIndex)
+{
+    std::string currentLine = lines[currentLineIndex];
+
+    std::vector<std::pair<size_t, size_t>> numberPositions;
+
+    auto stop = [&numberPositions]() { return numberPositions.size() == 2; };
+
+    for (size_t i = std::max(static_cast<int>(currentLineIndex) - 1, 0);
+         i != std::min(currentLineIndex + 1, lines.size() - 1) + 1;
+         ++i)
+    {
+        bool newNumber = true;
+
+        for (size_t j = std::max(static_cast<int>(pos) - 1, 0);
+             j != std::min(pos + 1, currentLine.size() - 1) + 1;
+             ++j)
+        {
+            if (!isdigit(lines[i][j]))
+            {
+                newNumber = true;
+                continue;
+            }
+
+            if (!newNumber)
+                continue;
+
+            if (stop())
+                return {};
+
+            numberPositions.push_back(std::make_pair(i, j));
+            newNumber = false;
+        }
+    }
+
+    if (numberPositions.size() != 2)
+        return {};
+
+    const size_t firstNumber =
+        findNumber(lines[numberPositions.front().first], numberPositions.front().second);
+    const size_t secondNumber =
+        findNumber(lines[numberPositions.back().first], numberPositions.back().second);
+
+    return firstNumber * secondNumber;
+}
+
 } // namespace
 
 namespace core
@@ -103,6 +185,27 @@ std::vector<size_t> findGearNumbers(const std::vector<std::string>& lines)
     }
 
     return numbers;
+}
+
+std::vector<size_t> extractGearRatios(const std::vector<std::string>& lines)
+{
+    std::vector<size_t> ratios;
+
+    for (size_t i = 0; i != lines.size(); ++i)
+    {
+        const std::string line = lines[i];
+
+        for (size_t j = 0; j != line.size(); ++j)
+        {
+            if (!isGearSymbol(line[j]))
+                continue;
+
+            if (const auto ratio = findRatio(lines, j, i))
+                ratios.push_back(*ratio);
+        }
+    }
+
+    return ratios;
 }
 
 bool isSymbol(const char& c)
