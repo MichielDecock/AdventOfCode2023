@@ -4,6 +4,8 @@
 #include "include/scratchcard.h"
 #include "include/utils.h"
 
+#include <iostream>
+
 namespace
 {
 
@@ -36,7 +38,7 @@ namespace core
 
 std::vector<size_t> scores(const char* fileName)
 {
-    const auto lines = core::readFile(fileName, {':', '|'});
+    const auto lines = readFile(fileName, {':', '|'});
 
     std::vector<size_t> scores;
 
@@ -84,18 +86,35 @@ std::vector<size_t> scores(const char* fileName)
                               winningNumbers.cend(),
                               std::stoi(numberString)) != winningNumbers.cend())
                 {
-                    if (*score == 0)
-                        score = 1;
-                    else
-                        score = *score * 2;
+                    score = *score + 1;
                 }
             }
         }
     }
 
-    scores.push_back(*score);
+    if (score)
+        scores.push_back(*score);
 
     return scores;
+}
+
+std::vector<size_t> numberOfScratchCards(const char* fileName)
+{
+    const auto winningCards = scores(fileName);
+
+    std::vector<size_t> cards(winningCards.size(), 1);
+
+    for (size_t i = 0; i != winningCards.size(); ++i)
+    {
+        const size_t score = winningCards[i];
+        for (size_t j = 0; j != score; ++j)
+        {
+            if (const size_t pos = i + 1 + j; pos < cards.size())
+                cards[pos] += cards[i];
+        }
+    }
+
+    return cards;
 }
 
 } // namespace core

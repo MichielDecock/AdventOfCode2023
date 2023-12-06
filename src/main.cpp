@@ -5,9 +5,9 @@
 
 int main(int argc, char** argv)
 {
-    const auto scores = core::scores("res/scratchcard");
+    const auto cards = core::numberOfScratchCards("res/scratchcard");
 
-    const size_t sum = core::sum(scores);
+    const size_t sum = core::sum(cards);
 
     std::cout << "The sum is " << sum << std::endl;
 
