@@ -4,6 +4,9 @@
 #include "cubes_game.h"
 #include "utils.h"
 
+namespace gtest
+{
+
 TEST(CubesGame, validGameIDs)
 {
     using namespace ::testing;
@@ -32,3 +35,5 @@ TEST(CubesGame, powersGameIDs)
     EXPECT_EQ(5u, powerIDs.size());
     EXPECT_THAT(powerIDs, ElementsAre(48u, 12u, 1560u, 630u, 36u));
 }
+
+} // namespace gtest
