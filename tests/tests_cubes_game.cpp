@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "core_cubes_game.h"
-#include "core_utils.h"
+#include "cubes_game.h"
+#include "utils.h"
 
 TEST(CubesGame, validGameIDs)
 {

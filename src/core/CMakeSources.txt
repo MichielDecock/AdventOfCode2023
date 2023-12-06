@@ -1,11 +1,11 @@
 set(CORE_HEADERS
-    include/core_cubes_game.h
-    include/core_trebuchet_calibration.h
-    include/core_utils.h
+    include/cubes_game.h
+    include/trebuchet_calibration.h
+    include/utils.h
 )
 
 set(CORE_SOURCES
-    core_cubes_game.cpp
-    core_trebuchet_calibration.cpp
-    core_utils.cpp
+    cubes_game.cpp
+    trebuchet_calibration.cpp
+    utils.cpp
 )

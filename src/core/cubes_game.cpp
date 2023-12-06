@@ -1,7 +1,7 @@
 #include <string>
 
-#include "include/core_cubes_game.h"
-#include "include/core_utils.h"
+#include "include/cubes_game.h"
+#include "include/utils.h"
 
 namespace core
 {

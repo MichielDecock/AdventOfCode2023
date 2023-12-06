@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "core_trebuchet_calibration.h"
-#include "core_utils.h"
+#include "trebuchet_calibration.h"
+#include "utils.h"
 
 namespace gtest
 {
@@ -32,7 +32,7 @@ MATCHER_P(matchMap, expectedMap, "Maps are not equal")
 TEST(TrebuchetCalibration, readFile)
 {
     using namespace ::testing;
-    const auto lines = core::readFile("tests/res/tests_calibration_input");
+    const auto lines = core::readFile("tests/res/tests_calibration");
 
     ASSERT_EQ(9u, lines.size());
     EXPECT_THAT(lines,
@@ -51,7 +51,7 @@ TEST(TrebuchetCalibration, extractNumber)
 {
     using namespace ::testing;
 
-    const auto lines = core::readFile("tests/res/tests_calibration_input");
+    const auto lines = core::readFile("tests/res/tests_calibration");
 
     const auto numbers = core::extractNumbers(lines);
 
@@ -61,7 +61,7 @@ TEST(TrebuchetCalibration, extractNumber)
 
 TEST(TrebuchetCalibration, sum)
 {
-    const auto lines = core::readFile("tests/res/tests_calibration_input");
+    const auto lines = core::readFile("tests/res/tests_calibration");
 
     const auto numbers = core::extractNumbers(lines);
 

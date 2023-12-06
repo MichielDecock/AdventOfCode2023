@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "include/core_trebuchet_calibration.h"
-#include "include/core_utils.h"
+#include "include/trebuchet_calibration.h"
+#include "include/utils.h"
 
 namespace
 {
