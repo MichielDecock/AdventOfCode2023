@@ -26,7 +26,34 @@ std::vector<size_t> extractNumbers(const std::string& string)
 
 std::vector<size_t> getSeeds(const std::string& string)
 {
-    return extractNumbers(string);
+    std::stringstream ss(string);
+    std::string       number;
+
+    std::vector<size_t> numbers;
+
+    std::optional<size_t> start;
+    std::optional<size_t> range;
+
+    while (std::getline(ss, number, ' '))
+    {
+        if (number.empty())
+            continue;
+
+        if (!start)
+        {
+            start = std::stoll(number);
+            continue;
+        }
+
+        range = std::stoll(number);
+
+        for (size_t i = *start; i != *start + *range; ++i)
+            numbers.push_back(i);
+
+        start = std::nullopt;
+    }
+
+    return numbers;
 }
 
 std::vector<std::vector<size_t>> getMap(const std::vector<std::string>& strings)
