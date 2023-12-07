@@ -5,17 +5,6 @@
 
 namespace
 {
-enum Category
-{
-    seeds = 0,
-    soil,
-    fertilizer,
-    water,
-    light,
-    temperature,
-    humidity,
-    location
-};
 
 std::vector<size_t> extractNumbers(const std::string& string)
 {
