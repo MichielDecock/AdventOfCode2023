@@ -1,15 +1,15 @@
 #include <iostream>
 
-#include "scratchcard.h"
+#include "seeds.h"
 #include "utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto cards = core::numberOfScratchCards("res/scratchcard");
+    const auto locations = core::locations("res/seeds");
 
-    const size_t sum = core::sum(cards);
+    const auto lowest = core::lowestLocation(locations);
 
-    std::cout << "The sum is " << sum << std::endl;
+    std::cout << "The min is " << *lowest << std::endl;
 
     return 0;
 }
