@@ -24,81 +24,82 @@ std::vector<size_t> extractNumbers(const std::string& string)
     return numbers;
 }
 
-std::vector<size_t> getSeeds(const std::string& string)
+bool findFrontMatch(std::vector<std::pair<core::Seed, bool>>& mappedSeeds,
+                    const core::Map&                          mapping,
+                    size_t                                    iSeed)
 {
-    std::stringstream ss(string);
-    std::string       number;
+    if (mappedSeeds[iSeed].second)
+        return true;
 
-    std::vector<size_t> numbers;
+    const size_t destStart = mapping[0];
+    const size_t sourceStart = mapping[1];
+    const size_t range = mapping[2];
 
-    std::optional<size_t> start;
-    std::optional<size_t> range;
+    const core::Seed seed = mappedSeeds[iSeed].first;
 
-    while (std::getline(ss, number, ' '))
-    {
-        if (number.empty())
-            continue;
+    const long long signedDelta = seed.first - sourceStart;
+    if (signedDelta < 0)
+        return false;
 
-        if (!start)
-        {
-            start = std::stoll(number);
-            continue;
-        }
+    const auto delta = static_cast<size_t>(signedDelta);
+    if (delta >= range)
+        return true;
 
-        range = std::stoll(number);
+    const size_t     mappedItems = std::min(seed.second, range - delta);
+    const auto mappedSeed = std::make_pair(std::make_pair(destStart + delta, mappedItems), true);
 
-        for (size_t i = *start; i != *start + *range; ++i)
-            numbers.push_back(i);
+    const size_t post = seed.second - mappedItems;
+    if (post > 0)
+        mappedSeeds.push_back(
+            std::make_pair(std::make_pair(seed.first + mappedItems, post), false));
 
-        start = std::nullopt;
-    }
+    mappedSeeds[iSeed] = mappedSeed;
 
-    return numbers;
+    return true;
 }
 
-std::vector<std::vector<size_t>> getMap(const std::vector<std::string>& strings)
+void findBackMatch(std::vector<std::pair<core::Seed, bool>>& mappedSeeds,
+                   const core::Map&                          mapping,
+                   size_t                                    iSeed)
 {
-    std::vector<std::vector<size_t>> map;
+    const size_t destStart = mapping[0];
+    const size_t sourceStart = mapping[1];
+    const size_t range = mapping[2];
 
-    for (const auto& string : strings)
-    {
-        auto numbers = extractNumbers(string);
-        map.push_back(numbers);
-    }
+    const core::Seed seed = mappedSeeds[iSeed].first;
 
-    return map;
+    const size_t seedBack = seed.first + seed.second - 1;
+    const size_t destBack = destStart + range - 1;
+
+    const long long signedDelta = seedBack - sourceStart;
+    if (signedDelta < 0)
+        return;
+
+    const auto delta = static_cast<size_t>(signedDelta);
+
+    const size_t mappedItems = std::min(delta + 1, range);
+
+    const size_t pre = seed.second - delta - 1;
+    if (pre > 0)
+        mappedSeeds.push_back(std::make_pair(std::make_pair(seed.first, pre), false));
+
+    const size_t post = seed.second - pre - mappedItems;
+    if (post > 0)
+        mappedSeeds.push_back(
+            std::make_pair(std::make_pair(seed.first + pre + mappedItems, post), false));
+
+    if (mappedItems)
+        mappedSeeds[iSeed] = std::make_pair(std::make_pair(destStart, mappedItems), true);
 }
 
-std::optional<size_t> mapped(const std::vector<std::vector<size_t>>& map, size_t seed)
+void useMapping(std::vector<std::pair<core::Seed, bool>>& mappedSeeds,
+                const core::Map&                          mapping,
+                size_t                                    iSeed)
 {
-    for (const auto& line : map)
-    {
-        const size_t destBegin = line[0];
-        const size_t sourceBegin = line[1];
-        const size_t range = line[2];
-
-        const size_t delta = seed - sourceBegin;
-
-        if (delta >= 0 && delta < range)
-            return destBegin + delta;
-    }
-
-    return {};
+    if (!findFrontMatch(mappedSeeds, mapping, iSeed))
+        findBackMatch(mappedSeeds, mapping, iSeed);
 }
 
-std::vector<size_t> useMap(const std::vector<std::vector<size_t>>& map,
-                           const std::vector<size_t>&              seeds)
-{
-    std::vector<size_t> mappedSeeds = seeds;
-
-    for (auto& seed : mappedSeeds)
-    {
-        if (const auto mappedValue = mapped(map, seed))
-            seed = *mappedValue;
-    }
-
-    return mappedSeeds;
-}
 } // namespace
 
 namespace core
@@ -127,11 +128,11 @@ std::vector<std::vector<std::string>> categories(const char* fileName)
     return categories;
 }
 
-std::vector<size_t> locations(const char* fileName)
+std::vector<Seed> locations(const char* fileName)
 {
     auto cats = categories(fileName);
 
-    std::vector<size_t> seeds = getSeeds(cats.front().front());
+    std::vector<Seed> seeds = getSeeds(cats.front().front());
 
     for (size_t category = 1; category != cats.size(); ++category)
     {
@@ -142,14 +143,82 @@ std::vector<size_t> locations(const char* fileName)
     return seeds;
 }
 
-std::optional<size_t> lowestLocation(const std::vector<size_t>& locations)
+std::optional<size_t> lowestLocation(const std::vector<Seed>& locations)
 {
-    auto lowest = std::min_element(locations.cbegin(), locations.cend());
+    auto lowest = std::min_element(locations.cbegin(),
+                                   locations.cend(),
+                                   [](const auto& a, const auto& b) { return a.first < b.first; });
 
     if (lowest != locations.cend())
-        return *lowest;
+        return lowest->first;
 
     return {};
+}
+
+std::vector<Seed> getSeeds(const std::string& string)
+{
+    std::stringstream ss(string);
+    std::string       number;
+
+    std::vector<Seed> seeds;
+
+    std::optional<size_t> start;
+
+    while (std::getline(ss, number, ' '))
+    {
+        if (number.empty())
+            continue;
+
+        if (!start)
+        {
+            start = std::stoll(number);
+            continue;
+        }
+
+        seeds.push_back(std::make_pair(*start, std::stoll(number)));
+
+        start = std::nullopt;
+    }
+
+    return seeds;
+}
+
+std::vector<Map> getMap(const std::vector<std::string>& strings)
+{
+    std::vector<std::vector<size_t>> map;
+
+    for (const auto& string : strings)
+    {
+        auto numbers = extractNumbers(string);
+        map.push_back(numbers);
+    }
+
+    return map;
+}
+
+std::vector<Seed> useMap(const std::vector<std::vector<size_t>>& map,
+                         const std::vector<Seed>&                seeds)
+{
+    std::vector<std::pair<Seed, bool>> mappedSeeds;
+    for (const auto& seed : seeds)
+    {
+        mappedSeeds.push_back(std::make_pair(seed, false));
+    }
+
+    for (const auto& mapping : map)
+    {
+        const size_t seedsCount = mappedSeeds.size();
+        for (size_t iSeed = 0; iSeed != seedsCount; ++iSeed)
+            useMapping(mappedSeeds, mapping, iSeed);
+    }
+
+    std::vector<Seed> output;
+    for (const auto& seed : mappedSeeds)
+    {
+        output.push_back(seed.first);
+    }
+
+    return output;
 }
 
 } // namespace core
