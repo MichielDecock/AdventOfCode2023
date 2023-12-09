@@ -1,15 +1,13 @@
 #include <iostream>
 
-#include "seeds.h"
+#include "boat_race.h"
 #include "utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto locations = core::locations("res/seeds");
+    const auto res = core::ways("res/boat_race");
 
-    const auto lowest = core::lowestLocation(locations);
-
-    std::cout << "The min is " << *lowest << std::endl;
+    std::cout << "Result is " << res << std::endl;
 
     return 0;
 }

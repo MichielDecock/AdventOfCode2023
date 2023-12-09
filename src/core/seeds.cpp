@@ -6,24 +6,6 @@
 namespace
 {
 
-std::vector<size_t> extractNumbers(const std::string& string)
-{
-    std::stringstream ss(string);
-    std::string       number;
-
-    std::vector<size_t> numbers;
-
-    while (std::getline(ss, number, ' '))
-    {
-        if (number.empty())
-            continue;
-
-        numbers.push_back(std::stoll(number));
-    }
-
-    return numbers;
-}
-
 bool findFrontMatch(std::vector<std::pair<core::Seed, bool>>& mappedSeeds,
                     const core::Map&                          mapping,
                     size_t                                    iSeed)
