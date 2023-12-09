@@ -11,57 +11,23 @@ std::tuple<Values, Values> readRecords(const char* fileName)
     return std::make_tuple(extractNumbers(lines.front()), extractNumbers(lines.back()));
 }
 
-Values distances(size_t time)
-{
-    Values out;
-
-    for (size_t t = 0; t <= time; ++t)
-    {
-        const auto speed = t;
-        const auto distance = (time - t) * speed;
-        out.push_back(distance);
-    }
-
-    return out;
-}
-
-size_t newRecords(const Values& distances, size_t record)
-{
-    size_t records = {};
-
-    for (const auto& distance : distances)
-    {
-        if (distance > record)
-            records++;
-    }
-
-    return records;
-}
-
-size_t ways(const Values& newRecords)
-{
-    size_t ways = 1;
-
-    for (const auto& numberRecords : newRecords)
-    {
-        ways *= numberRecords;
-    }
-
-    return ways;
-}
-
 size_t ways(const char* fileName)
 {
     const auto [times, distances] = readRecords(fileName);
 
-    size_t ways = 1;
+    const auto [min, max] = core::getLimits(times.front(), distances.front());
 
-    for (size_t i = 0; i != times.size(); ++i)
-    {
-        ways *= core::newRecords(core::distances(times[i]), distances[i]);
-    }
+    return max - min + 1;
+}
 
-    return ways;
+std::tuple<size_t, size_t> getLimits(size_t totalTime, size_t currentRecord)
+{
+    const unsigned long long D = std::sqrt(totalTime * totalTime - 4 * currentRecord);
+
+    const size_t min = std::ceil(0.5 * (totalTime - D));
+    const size_t max = std::floor(0.5 * (totalTime + D));
+
+    return std::make_tuple(min, max);
 }
 
 } // namespace core

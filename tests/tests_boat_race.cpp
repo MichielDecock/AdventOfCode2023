@@ -13,30 +13,25 @@ TEST(BoatRace, readRecords)
 {
     const auto [times, distances] = core::readRecords("tests/res/tests_boat_race");
 
-    EXPECT_THAT(times, ElementsAre(7, 15, 30));
-    EXPECT_THAT(distances, ElementsAre(9, 40, 200));
+    EXPECT_THAT(times, ElementsAre(71530));
+    EXPECT_THAT(distances, ElementsAre(940200));
 }
 
-TEST(BoatRace, allDistances)
+TEST(BoatRace, getLimits)
 {
     const auto [times, distances] = core::readRecords("tests/res/tests_boat_race");
 
-    core::Values dist1 = core::distances(times[0]);
-    EXPECT_THAT(dist1, ElementsAre(0, 6, 10, 12, 12, 10, 6, 0));
-}
+    const auto [min, max] = core::getLimits(times.front(), distances.front());
 
-TEST(BoatRace, newRecords)
-{
-    const auto [times, distances] = core::readRecords("tests/res/tests_boat_race");
-
-    core::Values dist1 = core::distances(times[0]);
-    const size_t records = core::newRecords(dist1, times[0]);
-    EXPECT_EQ(4, records);
+    EXPECT_EQ(14, min);
+    EXPECT_EQ(71516, max);
 }
 
 TEST(BoatRace, ways)
 {
-    EXPECT_EQ(288, core::ways("tests/res/tests_boat_race"));
+    const auto ways = core::ways("tests/res/tests_boat_race");
+
+    EXPECT_EQ(71503, ways);
 }
 
 } // namespace gtest
