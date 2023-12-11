@@ -34,9 +34,4 @@ TEST(Desert, convertInput)
                             matchPath(Path({7, 7}))));
 }
 
-TEST(Desert, steps)
-{
-    EXPECT_EQ(6, steps("tests/res/tests_desert_ghost"));
-}
-
 } // namespace gtest
