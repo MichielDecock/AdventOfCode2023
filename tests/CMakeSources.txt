@@ -1,5 +1,6 @@
 set(TESTS_SOURCES
     tests_boat_race.cpp
+    tests_camel.cpp
     tests_cubes_game.cpp
     tests_gondola_gear.cpp
     tests_scratchcard.cpp

@@ -1,5 +1,6 @@
 set(CORE_HEADERS
     include/boat_race.h
+    include/camel.h
     include/cubes_game.h
     include/gondola_gear.h
     include/scratchcard.h
@@ -10,6 +11,7 @@ set(CORE_HEADERS
 
 set(CORE_SOURCES
     boat_race.cpp
+    camel.cpp
     cubes_game.cpp
     gondola_gear.cpp
     scratchcard.cpp
