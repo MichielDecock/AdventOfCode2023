@@ -18,7 +18,8 @@ enum Type
 
 enum Weight
 {
-    e2 = 1,
+    J = 1,
+    e2,
     e3,
     e4,
     e5,
@@ -27,7 +28,6 @@ enum Weight
     e8,
     e9,
     T,
-    J,
     Q,
     K,
     A

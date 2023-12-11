@@ -8,6 +8,11 @@
 namespace core
 {
 
+static bool isJoker(const char& c)
+{
+    return c == 'J';
+};
+
 static bool compChars(const char& a, const char& b)
 {
     if (isdigit(a))
@@ -15,8 +20,11 @@ static bool compChars(const char& a, const char& b)
         if (isdigit(b))
             return a > b;
 
-        return false;
+        return isJoker(b);
     }
+
+    if (isJoker(a))
+        return false;
 
     if (a == 'K' && b == 'A')
         return false;
@@ -24,10 +32,7 @@ static bool compChars(const char& a, const char& b)
     if (a == 'Q' && (b == 'A' || b == 'K'))
         return false;
 
-    if (a == 'J' && (b == 'A' || b == 'K' || b == 'Q'))
-        return false;
-
-    if (a == 'T' && (b == 'A' || b == 'K' || b == 'Q' || b == 'J'))
+    if (a == 'T' && (b == 'A' || b == 'K' || b == 'Q'))
         return false;
 
     return true;
@@ -67,10 +72,19 @@ Type type(const std::string& hand)
     std::vector<size_t> counts;
     std::optional<char> curChar;
 
+    size_t jokerCounts = 0;
+
     const std::string sortedHand = sortHand(hand);
 
     for (const auto& c : sortedHand)
     {
+        if (isJoker(c))
+        {
+            jokerCounts++;
+            curChar = std::nullopt;
+            continue;
+        }
+
         if (!curChar)
         {
             curChar = c;
@@ -92,10 +106,18 @@ Type type(const std::string& hand)
         return highCard;
 
     if (counts.size() == 4)
+    {
+        if (jokerCounts == 1)
+            return onePair;
+
         return onePair;
+    }
 
     if (counts.size() == 3)
     {
+        if (jokerCounts > 0)
+            return threeOfAKind;
+
         if (std::find(counts.cbegin(), counts.cend(), 3) != counts.cend())
             return threeOfAKind;
 
@@ -104,6 +126,17 @@ Type type(const std::string& hand)
 
     if (counts.size() == 2)
     {
+        if (jokerCounts > 1)
+            return fourOfAKind;
+
+        if (jokerCounts == 1)
+        {
+            if (std::find(counts.cbegin(), counts.cend(), 3) != counts.cend())
+                return fourOfAKind;
+
+            return fullHouse;
+        }
+
         if (std::find(counts.cbegin(), counts.cend(), 4) != counts.cend())
             return fourOfAKind;
 
