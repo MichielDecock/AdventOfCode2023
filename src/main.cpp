@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "camel.h"
+#include "desert.h"
 #include "utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto res = core::totalWinnings("res/camel");
+    const auto res = core::steps("res/desert");
 
     std::cout << "Result is " << res << std::endl;
 
