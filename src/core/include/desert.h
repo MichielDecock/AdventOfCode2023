@@ -7,6 +7,7 @@ namespace core
 
 using Instructions = std::vector<bool>;
 using Node = size_t;
+using Nodes = std::vector<Node>;
 
 struct Path
 {
@@ -16,7 +17,7 @@ struct Path
 
 using Paths = std::vector<Path>;
 
-std::tuple<Instructions, Paths, Node, Node> convertInput(const char* filePath);
+std::tuple<Instructions, Paths, Nodes, Nodes> convertInput(const char* filePath);
 
 using Steps = unsigned long long;
 

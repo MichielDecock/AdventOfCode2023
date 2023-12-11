@@ -1,3 +1,5 @@
+#include <numeric>
+
 #include "desert.h"
 #include "utils.h"
 
@@ -37,7 +39,7 @@ static std::optional<Node> convertToNode(const std::string&              string,
     return {};
 }
 
-std::tuple<Instructions, Paths, Node, Node> convertInput(const char* filePath)
+std::tuple<Instructions, Paths, Nodes, Nodes> convertInput(const char* filePath)
 {
     auto lines = readFile(filePath, {'=', ','});
 
@@ -56,14 +58,25 @@ std::tuple<Instructions, Paths, Node, Node> convertInput(const char* filePath)
     const size_t count = lines.size();
     for (size_t i = 0; i != count; ++i)
     {
+        const auto& line = lines[i];
         if (i % 3 == 0)
-            nodes.push_back(lines[i]);
+            nodes.push_back(line);
         else
-            rawPaths.push_back(lines[i]);
+            rawPaths.push_back(line);
     }
 
-    const auto start = convertToNode("AAA", nodes);
-    const auto target = convertToNode("ZZZ", nodes);
+    Nodes starts;
+    Nodes targets;
+
+    const size_t countNodes = nodes.size();
+    for (size_t i = 0; i != countNodes; ++i)
+    {
+        const auto& node = nodes[i];
+        if (node.ends_with('A'))
+            starts.push_back(*convertToNode(node, nodes));
+        else if (node.ends_with('Z'))
+            targets.push_back(*convertToNode(node, nodes));
+    }
 
     Paths paths;
     Path  curPath;
@@ -85,27 +98,51 @@ std::tuple<Instructions, Paths, Node, Node> convertInput(const char* filePath)
         paths.push_back(curPath);
     }
 
-    return std::make_tuple(instructions, paths, *start, *target);
+    return std::make_tuple(instructions, paths, starts, targets);
 }
 
 Steps steps(const char* filePath)
 {
-    const auto [instructions, paths, start, target] = convertInput(filePath);
+    const auto [instructions, paths, starts, targets] = convertInput(filePath);
     const auto instructionsCount = instructions.size();
 
-    Steps steps = 0;
-    Node  curNode = start;
+    Steps                               steps = 0;
+    std::array<std::optional<Steps>, 6> hits{};
+    Nodes                               curNodes = starts;
 
-    while (curNode != target)
+    auto hitAllTargetsAtLeastOnce = [&targets, &curNodes, &hits, &steps]()
+    {
+        for (size_t i = 0; i != curNodes.size(); ++i)
+        {
+            const auto& node = curNodes[i];
+            if (std::find(targets.cbegin(), targets.cend(), node) != targets.cend())
+            {
+                if (!hits[i])
+                    hits[i] = steps;
+            }
+        }
+
+        return std::find(hits.cbegin(), hits.cend(), std::nullopt) == hits.cend();
+    };
+
+    while (!hitAllTargetsAtLeastOnce())
     {
         const bool curInstruction = instructions[steps % instructionsCount];
-        const auto curPath = paths[curNode];
 
-        curNode = curInstruction ? curPath.right : curPath.left;
+        for (auto& node : curNodes)
+        {
+            const auto curPath = paths[node];
+            node = curInstruction ? curPath.right : curPath.left;
+        }
+
         steps++;
     }
 
-    return steps;
+    Steps lcm = 1;
+    for (const auto& frequency : hits)
+        lcm = std::lcm(lcm, *frequency);
+
+    return lcm;
 }
 
 } // namespace core

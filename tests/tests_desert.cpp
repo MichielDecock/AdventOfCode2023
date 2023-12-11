@@ -17,19 +17,26 @@ MATCHER_P(matchPath, expected, "Paths are not equal")
 
 TEST(Desert, convertInput)
 {
-    const auto [instructions, paths, start, target] = convertInput("tests/res/tests_desert");
+    const auto [instructions, paths, starts, targets] =
+        convertInput("tests/res/tests_desert_ghost");
 
-    EXPECT_EQ(0, start);
-    EXPECT_EQ(2, target);
-    EXPECT_THAT(Instructions({false, false, true}), instructions);
-    EXPECT_THAT(
-        paths,
-        ElementsAre(matchPath(Path({1, 1})), matchPath(Path({0, 2})), matchPath(Path({2, 2}))));
+    EXPECT_THAT(starts, ElementsAre(0, 3));
+    EXPECT_THAT(targets, ElementsAre(2, 6));
+    EXPECT_THAT(instructions, ElementsAre(false, true));
+    EXPECT_THAT(paths,
+                ElementsAre(matchPath(Path({1, 7})),
+                            matchPath(Path({7, 2})),
+                            matchPath(Path({1, 7})),
+                            matchPath(Path({4, 7})),
+                            matchPath(Path({5, 5})),
+                            matchPath(Path({6, 6})),
+                            matchPath(Path({4, 4})),
+                            matchPath(Path({7, 7}))));
 }
 
 TEST(Desert, steps)
 {
-    EXPECT_EQ(6, steps("tests/res/tests_desert"));
+    EXPECT_EQ(6, steps("tests/res/tests_desert_ghost"));
 }
 
 } // namespace gtest
