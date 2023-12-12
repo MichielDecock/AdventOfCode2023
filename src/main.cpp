@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "desert.h"
+#include "oasis.h"
 #include "utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto res = core::steps("res/desert");
+    const auto res = core::sum(core::extrapolatedValues("res/oasis"));
 
     std::cout << "Result is " << res << std::endl;
 

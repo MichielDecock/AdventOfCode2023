@@ -4,6 +4,7 @@ set(CORE_HEADERS
     include/cubes_game.h
     include/desert.h
     include/gondola_gear.h
+    include/oasis.h
     include/scratchcard.h
     include/seeds.h
     include/trebuchet_calibration.h
@@ -16,6 +17,7 @@ set(CORE_SOURCES
     cubes_game.cpp
     desert.cpp
     gondola_gear.cpp
+    oasis.cpp
     scratchcard.cpp
     seeds.cpp
     trebuchet_calibration.cpp
