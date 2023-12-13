@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "oasis.h"
+#include "loop.h"
 #include "utils.h"
 
 int main(int argc, char** argv)
 {
-    const auto res = core::sum(core::extrapolatedValues("res/oasis"));
+    const auto res = core::farthestDistance("res/loop");
 
     std::cout << "Result is " << res << std::endl;
 
