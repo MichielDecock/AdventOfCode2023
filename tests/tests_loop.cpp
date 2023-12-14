@@ -24,7 +24,22 @@ TEST(Loop, findStart)
 
 TEST(Loop, farthestDistance)
 {
-    EXPECT_EQ(8, farthestDistance("tests/res/tests_loop"));
+    auto distance = [](const char* fileName) { return std::get<0>(farthestDistance(fileName)); };
+
+    EXPECT_EQ(8, distance("tests/res/tests_loop"));
+    EXPECT_EQ(23, distance("tests/res/tests_loop_inner_tiles1"));
+    EXPECT_EQ(22, distance("tests/res/tests_loop_inner_tiles2"));
+    EXPECT_EQ(70, distance("tests/res/tests_loop_inner_tiles3"));
+    EXPECT_EQ(80, distance("tests/res/tests_loop_inner_tiles4"));
+}
+
+TEST(Loop, innerTiles)
+{
+    EXPECT_EQ(1, innerTiles("tests/res/tests_loop"));
+    EXPECT_EQ(4, innerTiles("tests/res/tests_loop_inner_tiles1"));
+    EXPECT_EQ(4, innerTiles("tests/res/tests_loop_inner_tiles2"));
+    EXPECT_EQ(8, innerTiles("tests/res/tests_loop_inner_tiles3"));
+    EXPECT_EQ(10, innerTiles("tests/res/tests_loop_inner_tiles4"));
 }
 
 } // namespace gtest

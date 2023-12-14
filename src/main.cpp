@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-    const auto res = core::farthestDistance("res/loop");
+    const auto res = core::innerTiles("res/loop");
 
     std::cout << "Result is " << res << std::endl;
 

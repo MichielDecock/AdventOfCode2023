@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "loop.h"
 #include "utils.h"
 
@@ -12,6 +14,11 @@ static inline bool isDot(const char& c)
 static inline bool isStart(const char& c)
 {
     return c == 'S';
+}
+
+static bool operator==(const Coords& co1, const Coords& co2)
+{
+    return co1.row == co2.row && co1.column == co2.column;
 }
 
 static bool
@@ -235,6 +242,31 @@ bool Comparator::operator()(const NodePtr& node1, const NodePtr& node2) const
     return node1->distance < node2->distance;
 }
 
+static NodePtr copyNode(const NodePtr& other, Graph& graph)
+{
+    const auto node = std::make_shared<Node>(other->row, other->column);
+    node->distance = other->distance;
+
+    const auto [it, success] = graph.insert(node);
+    if (!success)
+        return *it;
+
+    for (const auto& otherNeighbor : other->neighbors)
+        node->neighbors.push_back(copyNode(otherNeighbor, graph));
+
+    return *it;
+}
+
+Graph cloneGraph(const Graph& other)
+{
+    Graph graph;
+
+    for (const auto& node : other)
+        copyNode(node, graph);
+
+    return graph;
+}
+
 Graph convertToGraph(const std::vector<std::string>& lines)
 {
     const auto rows = lines.size();
@@ -268,7 +300,7 @@ Graph convertToGraph(const std::vector<std::string>& lines)
     return graph;
 }
 
-size_t farthestDistance(const char* fileName)
+std::tuple<size_t, NodePtr> farthestDistance(const char* fileName)
 {
     const auto lines = readFile(fileName);
 
@@ -277,20 +309,129 @@ size_t farthestDistance(const char* fileName)
     const std::vector<PotentialStart> starts = potentialStarts(lines, graph);
 
     size_t distance = {};
+    NodePtr endNode = nullptr;
 
     for (const auto& [s, e] : starts)
     {
         resetDistances(graph);
 
-        Graph sGraph = graph;
-        sGraph.insert(s);
-        sGraph.insert(e);
+        Graph sGraph = cloneGraph(graph);
+        copyNode(s, sGraph);
+        const auto end = copyNode(e, sGraph);
 
-        if (const auto d = farthestDistance(sGraph, e))
-            distance = std::max(distance, *d);
+        if (const auto d = farthestDistance(sGraph, end))
+        {
+            if (d < distance)
+                continue;
+
+            distance = *d;
+            endNode = end;
+        }
     }
 
-    return distance;
+    return std::make_tuple(distance, endNode);
+}
+
+static std::tuple<Coords, Coords> boundingBox(const Graph& loop)
+{
+    const size_t maxRow =
+        (*std::max_element(loop.cbegin(),
+                           loop.cend(),
+                           [](const auto& co1, const auto& co2) { return co1->row < co2->row; }))
+            ->row;
+
+    const size_t maxCol = (*std::max_element(loop.cbegin(),
+                                             loop.cend(),
+                                             [](const auto& co1, const auto& co2)
+                                             { return co1->column < co2->column; }))
+                              ->column;
+
+    const size_t minRow =
+        (*std::min_element(loop.cbegin(),
+                           loop.cend(),
+                           [](const auto& co1, const auto& co2) { return co1->row < co2->row; }))
+            ->row;
+
+    const size_t minCol = (*std::min_element(loop.cbegin(),
+                                             loop.cend(),
+                                             [](const auto& co1, const auto& co2)
+                                             { return co1->column < co2->column; }))
+                              ->column;
+
+    return std::make_tuple(Coords(minRow, minCol), Coords(maxRow, maxCol));
+}
+
+size_t innerTiles(const char* fileName)
+{
+    const auto [distance, endNode] = farthestDistance(fileName);
+
+    const auto loop = getLoop(endNode);
+
+    const auto [leftTop, rightBottom] = boundingBox(loop);
+
+    auto flipInLoop = [&](const Coords& co, bool& inLoop)
+    {
+        const auto it =
+            std::find_if(loop.cbegin(),
+                         loop.cend(),
+                         [&](const auto& n) { return n->row == co.row && n->column == co.column; });
+
+        if (it == loop.cend())
+            return false;
+
+        const NodePtr node = *it;
+
+        if (std::any_of(node->neighbors.cbegin(),
+                        node->neighbors.cend(),
+                        [&](const auto& n)
+                        { return n->row - 1 == co.row && n->column == node->column; }))
+        {
+            inLoop = !inLoop;
+        }
+
+        return true;
+    };
+
+    size_t tiles = 0;
+
+    for (size_t row = leftTop.row; row < rightBottom.row; ++row)
+    {
+        bool inLoop = false;
+
+        for (size_t col = leftTop.column; col < rightBottom.column; ++col)
+        {
+            if (flipInLoop({row, col}, inLoop))
+                continue;
+
+            if (inLoop)
+                tiles++;
+        }
+    }
+
+    return tiles;
+}
+
+Graph getLoop(const NodePtr& endNode)
+{
+    Graph loop;
+
+    const auto end = copyNode(endNode, loop);
+
+    loop.erase(loop.cbegin());
+
+    const auto firstAfterStart =
+        *std::find_if(loop.cbegin(), loop.cend(), [&](const auto& n) { return n->distance == 1; });
+
+    end->neighbors.push_back(firstAfterStart);
+
+    const auto it =
+        std::find_if(firstAfterStart->neighbors.cbegin(),
+                     firstAfterStart->neighbors.cend(),
+                     [&](const auto& n) { return n->row == end->row && n->column == end->column; });
+    firstAfterStart->neighbors.erase(it);
+    firstAfterStart->neighbors.push_back(end);
+
+    return loop;
 }
 
 } // namespace core

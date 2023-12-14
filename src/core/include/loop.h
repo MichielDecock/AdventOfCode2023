@@ -34,8 +34,26 @@ struct Comparator
 };
 using Graph = std::set<NodePtr, Comparator>;
 
+Graph cloneGraph(const Graph& graph);
+
 Graph convertToGraph(const std::vector<std::string>& lines);
 
-size_t farthestDistance(const char* fileName);
+std::tuple<size_t, NodePtr> farthestDistance(const char* fileName);
+
+size_t innerTiles(const char* fileName);
+
+Graph getLoop(const NodePtr& endNode);
+
+struct Coords
+{
+    Coords(size_t row, size_t column)
+        : row(row)
+        , column(column)
+    {
+    }
+
+    size_t row = {};
+    size_t column = {};
+};
 
 } // namespace core
