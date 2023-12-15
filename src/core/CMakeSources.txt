@@ -2,6 +2,7 @@ set(CORE_HEADERS
     include/boat_race.h
     include/camel.h
     include/cubes_game.h
+    include/cosmic.h
     include/desert.h
     include/gondola_gear.h
     include/loop.h
@@ -17,6 +18,7 @@ set(CORE_SOURCES
     boat_race.cpp
     camel.cpp
     cubes_game.cpp
+    cosmic.cpp
     desert.cpp
     gondola_gear.cpp
     loop.cpp
