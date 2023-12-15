@@ -20,10 +20,10 @@ struct Position
 using Positions = std::vector<Position>;
 using Lines = std::vector<std::string>;
 
-Positions expandSpace(const char* fileName);
+Positions expandSpace(const char* fileName, size_t factor);
 
 Positions getGalaxies(const Lines& lines);
 
-std::vector<size_t> distances(const char* fileName);
+std::vector<size_t> distances(const char* fileName, size_t factor);
 
 } // namespace core

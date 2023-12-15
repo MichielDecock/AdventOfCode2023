@@ -33,7 +33,7 @@ TEST(Cosmic, getGalaxies)
 
 TEST(Cosmic, expandSpace)
 {
-    const Positions galaxies = expandSpace("tests/res/tests_cosmic");
+    const Positions galaxies = expandSpace("tests/res/tests_cosmic", 2);
 
     EXPECT_THAT(galaxies,
                 ElementsAre(matchPos(Position(0, 4)),
@@ -49,7 +49,9 @@ TEST(Cosmic, expandSpace)
 
 TEST(Cosmic, distances)
 {
-    EXPECT_EQ(374, sum(distances("tests/res/tests_cosmic")));
+    EXPECT_EQ(374, sum(distances("tests/res/tests_cosmic", 2)));
+    EXPECT_EQ(1030, sum(distances("tests/res/tests_cosmic", 10)));
+    EXPECT_EQ(8410, sum(distances("tests/res/tests_cosmic", 100)));
 }
 
 } // namespace gtest

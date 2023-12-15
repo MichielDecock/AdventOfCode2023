@@ -11,7 +11,7 @@ static inline bool isGalaxy(const char& c)
     return c == '#';
 }
 
-Positions expandSpace(const char* fileName)
+Positions expandSpace(const char* fileName, size_t factor)
 {
     const auto lines = readFile(fileName);
 
@@ -31,11 +31,13 @@ Positions expandSpace(const char* fileName)
 
     Positions correctedGalaxies = galaxies;
 
+    const int correctedFactor = static_cast<int>(factor - 1);
+
     int lastRow = 0;
 
     for (const auto& row : galaxyRows)
     {
-        const auto delta = row - lastRow - 1;
+        const auto delta = (row - lastRow - 1) * correctedFactor;
         lastRow = row;
 
         if (delta <= 0)
@@ -55,7 +57,7 @@ Positions expandSpace(const char* fileName)
 
     for (const auto& col : galaxyCols)
     {
-        const auto delta = col - lastCol - 1;
+        const auto delta = (col - lastCol - 1) * correctedFactor;
         lastCol = col;
 
         if (delta <= 0)
@@ -93,11 +95,11 @@ Positions getGalaxies(const Lines& lines)
     return positions;
 }
 
-std::vector<size_t> distances(const char* fileName)
+std::vector<size_t> distances(const char* fileName, size_t factor)
 {
     std::vector<size_t> distances;
 
-    const Positions galaxies = expandSpace(fileName);
+    const Positions galaxies = expandSpace(fileName, factor);
 
     const size_t count = galaxies.size();
     for (size_t i = 0; i < count; ++i)
